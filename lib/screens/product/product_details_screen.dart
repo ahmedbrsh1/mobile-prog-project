@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../models/product_model.dart';
-import '../../data/app_data.dart';
-import '../../services/cart_service.dart'; // استدعاء السيرفيس
+import '../../services/cart_service.dart';
+import '../../services/wishlist_service.dart'; // import
 
 class ProductDetailsScreen extends StatefulWidget {
   const ProductDetailsScreen({super.key});
@@ -13,7 +14,6 @@ class ProductDetailsScreen extends StatefulWidget {
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   String selectedSize = "M";
 
-  // دالة إضافة مراجعة (Dialog) - زي ما هي
   void _showAddReviewDialog() {
     showDialog(
       context: context,
@@ -22,11 +22,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         content: const TextField(decoration: InputDecoration(hintText: "Describe your experience...", border: OutlineInputBorder()), maxLines: 3),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF9775FA)),
-            onPressed: () { Navigator.pop(context); ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Review Submitted!"))); }, 
-            child: const Text("Submit", style: TextStyle(color: Colors.white))
-          )
+          ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF9775FA)), onPressed: () { Navigator.pop(context); ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Review Submitted!"))); }, child: const Text("Submit", style: TextStyle(color: Colors.white)))
         ],
       ),
     );
@@ -42,13 +38,23 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         backgroundColor: Colors.transparent, elevation: 0,
         leading: Padding(padding: const EdgeInsets.all(8.0), child: CircleAvatar(backgroundColor: Colors.white, child: const BackButton(color: Colors.black))),
         actions: [
-          Padding(padding: const EdgeInsets.all(8.0), child: CircleAvatar(backgroundColor: Colors.white, child: ValueListenableBuilder<List<Product>>(
-            valueListenable: AppData.wishlistNotifier,
-            builder: (context, wishlist, child) {
-              bool isFav = AppData.isInWishlist(product);
-              return IconButton(icon: Icon(isFav ? Icons.favorite : Icons.favorite_border, color: isFav ? Colors.red : Colors.black), onPressed: () => AppData.toggleWishlist(product));
-            },
-          )))
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              // --- قلب متصل بالفايربيز ---
+              child: StreamBuilder<QuerySnapshot>(
+                stream: WishlistService().isFavoriteStream(product.id),
+                builder: (context, snapshot) {
+                  bool isFav = snapshot.hasData && snapshot.data!.docs.isNotEmpty;
+                  return IconButton(
+                    icon: Icon(isFav ? Icons.favorite : Icons.favorite_border, color: isFav ? Colors.red : Colors.black),
+                    onPressed: () => WishlistService().toggleWishlist(product),
+                  );
+                },
+              ),
+            ),
+          )
         ],
       ),
       body: SingleChildScrollView(
@@ -64,7 +70,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   const SizedBox(height: 5),
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Expanded(child: Text(product.title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold))), Text("\$${product.price}", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold))]),
                   const SizedBox(height: 15),
-                  // Images Row
                   Row(children: product.images.take(4).map((img) => Container(margin: const EdgeInsets.only(right: 10), width: 70, height: 70, decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), image: DecorationImage(image: NetworkImage(img), fit: BoxFit.cover)))).toList()),
                   const SizedBox(height: 20),
                   const Text("Size", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
@@ -75,13 +80,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   const SizedBox(height: 10),
                   Text(product.description, style: const TextStyle(color: Colors.grey, height: 1.5)),
                   const SizedBox(height: 20),
-                  
-                  // --- قسم المراجعات ---
-                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    const Text("Reviews", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    TextButton(onPressed: _showAddReviewDialog, child: const Text("Add Review", style: TextStyle(color: Color(0xFF9775FA))))
-                  ]),
-                  
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text("Reviews", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)), TextButton(onPressed: _showAddReviewDialog, child: const Text("Add Review", style: TextStyle(color: Color(0xFF9775FA))))]),
                   _buildReviewItem("Ronald Richards", "13 Sep, 2020", 4.8, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque malesuada eget vitae amet..."),
                   _buildReviewItem("Jenny Wilson", "12 Sep, 2020", 4.5, "Great product! highly recommended."),
                 ],
@@ -94,13 +93,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         padding: const EdgeInsets.all(20),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF9775FA), padding: const EdgeInsets.symmetric(vertical: 18), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-          // --- هنا التعديل: استدعاء السيرفيس ---
           onPressed: () {
             CartService().addToCart(product, selectedSize).then((_) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text("Added to Cart Successfully! 🛒"),
-                backgroundColor: Colors.green,
-              ));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Added to Cart Successfully! 🛒"), backgroundColor: Colors.green));
             }).catchError((e) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red));
             });
@@ -117,15 +112,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const CircleAvatar(backgroundImage: NetworkImage("https://i.pravatar.cc/150")), // صورة وهمية
-              const SizedBox(width: 10),
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(name, style: const TextStyle(fontWeight: FontWeight.bold)), Text(date, style: const TextStyle(color: Colors.grey, fontSize: 12))]),
-              const Spacer(),
-              Column(children: [Text("$rating rating", style: const TextStyle(fontWeight: FontWeight.bold)), Row(children: const [Icon(Icons.star, color: Colors.orange, size: 12), Icon(Icons.star, color: Colors.orange, size: 12), Icon(Icons.star, color: Colors.orange, size: 12), Icon(Icons.star, color: Colors.orange, size: 12), Icon(Icons.star, color: Colors.orange, size: 12)])])
-            ],
-          ),
+          Row(children: [const CircleAvatar(backgroundImage: NetworkImage("https://i.pravatar.cc/150")), const SizedBox(width: 10), Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(name, style: const TextStyle(fontWeight: FontWeight.bold)), Text(date, style: const TextStyle(color: Colors.grey, fontSize: 12))]), const Spacer(), Column(children: [Text("$rating rating", style: const TextStyle(fontWeight: FontWeight.bold)), Row(children: const [Icon(Icons.star, color: Colors.orange, size: 12), Icon(Icons.star, color: Colors.orange, size: 12), Icon(Icons.star, color: Colors.orange, size: 12), Icon(Icons.star, color: Colors.orange, size: 12), Icon(Icons.star, color: Colors.orange, size: 12)])])]),
           const SizedBox(height: 10),
           Text(text, style: const TextStyle(color: Colors.grey)),
         ],
