@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../main.dart'; // استيراد themeNotifier من الماين
 import '../../services/api_service.dart';
 import '../../models/product_model.dart';
 import '../../services/wishlist_service.dart';
 import '../cart/cart_screen.dart';
-import '../cart/orders_screen.dart'; // 1. استدعاء صفحة الطلبات الجديدة
+import '../cart/orders_screen.dart';
 import '../profile/wishlist_screen.dart';
 import '../profile/profile_screen.dart';
 import '../profile/account_info_screen.dart';
@@ -23,7 +24,7 @@ class _MainWrapperState extends State<MainWrapper> {
     const HomeScreenContent(),
     const WishlistScreen(),
     const CartScreen(),
-    const OrdersScreen(), // 2. حطينا صفحة الطلبات مكان البروفايل/المحفظة
+    const OrdersScreen(),
   ];
 
   @override
@@ -41,7 +42,6 @@ class _MainWrapperState extends State<MainWrapper> {
           BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.favorite_border), activeIcon: Icon(Icons.favorite), label: "Wishlist"),
           BottomNavigationBarItem(icon: Icon(Icons.shopping_bag_outlined), activeIcon: Icon(Icons.shopping_bag), label: "Cart"),
-          // 3. غيرنا الأيقونة والاسم لـ Orders
           BottomNavigationBarItem(icon: Icon(Icons.receipt_long_outlined), activeIcon: Icon(Icons.receipt_long), label: "Orders"),
         ],
       ),
@@ -49,7 +49,6 @@ class _MainWrapperState extends State<MainWrapper> {
   }
 
   Widget _buildDrawer(BuildContext context) {
-    bool isDarkMode = false;
     void navigateTo(Widget page) {
       Navigator.pop(context);
       Navigator.push(context, MaterialPageRoute(builder: (context) => page));
@@ -81,14 +80,35 @@ class _MainWrapperState extends State<MainWrapper> {
             ),
           ),
           const SizedBox(height: 30),
+          
+          // --- تعديل جزء الدارك مود هنا ---
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Row(children: [Icon(Icons.wb_sunny_outlined, size: 22), SizedBox(width: 15), Text("Dark Mode", style: TextStyle(fontSize: 15))]), Switch(value: isDarkMode, activeColor: const Color(0xFF9775FA), onChanged: (val) {})]),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween, 
+              children: [
+                const Row(children: [Icon(Icons.wb_sunny_outlined, size: 22), SizedBox(width: 15), Text("Dark Mode", style: TextStyle(fontSize: 15))]),
+                // استخدام ValueListenableBuilder لمزامنة حالة السويتش مع الثيم
+                ValueListenableBuilder<ThemeMode>(
+                  valueListenable: themeNotifier,
+                  builder: (context, currentMode, child) {
+                    return Switch(
+                      value: currentMode == ThemeMode.dark,
+                      activeColor: const Color(0xFF9775FA),
+                      onChanged: (val) {
+                        themeNotifier.value = val ? ThemeMode.dark : ThemeMode.light;
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
+          
           const SizedBox(height: 10),
           _drawerItem(Icons.info_outline, "Account Information", onTap: () => navigateTo(const AccountInfoScreen())),
           _drawerItem(Icons.lock_outline, "Password"),
-          _drawerItem(Icons.shopping_bag_outlined, "Order", onTap: () => navigateTo(const OrdersScreen())), // ربطناها هنا كمان
+          _drawerItem(Icons.shopping_bag_outlined, "Order", onTap: () => navigateTo(const OrdersScreen())),
           _drawerItem(Icons.credit_card, "My Cards", onTap: () => navigateTo(const ProfileScreen())),
           _drawerItem(Icons.favorite_border, "Wishlist", onTap: () => navigateTo(const WishlistScreen())),
           _drawerItem(Icons.settings_outlined, "Settings"),
@@ -107,12 +127,10 @@ class _MainWrapperState extends State<MainWrapper> {
   }
 
   Widget _drawerItem(IconData icon, String title, {VoidCallback? onTap}) {
-    return ListTile(leading: Icon(icon, color: Colors.black87), title: Text(title, style: const TextStyle(fontSize: 15)), onTap: onTap ?? () {});
+    return ListTile(leading: Icon(icon), title: Text(title, style: const TextStyle(fontSize: 15)), onTap: onTap ?? () {});
   }
 }
 
-// ... كلاس HomeScreenContent اللي تحت سيبه زي ما هو (لأنه طويل ومفيهوش تغيير) ...
-// (لو عايزني ابعته كله تاني قولي، بس التغيير كله كان في MainWrapper فوق)
 class HomeScreenContent extends StatefulWidget {
   const HomeScreenContent({super.key});
   @override
@@ -140,13 +158,29 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white, elevation: 0,
-        leading: Padding(padding: const EdgeInsets.only(left: 15.0), child: CircleAvatar(backgroundColor: Colors.grey[100], child: IconButton(icon: const Icon(Icons.menu_open_rounded, color: Colors.black), onPressed: () => Scaffold.of(context).openDrawer()))),
-        actions: [Padding(padding: const EdgeInsets.only(right: 15.0), child: CircleAvatar(backgroundColor: Colors.grey[100], child: IconButton(icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black), onPressed: () => Navigator.pushNamed(context, '/cart'))))],
+        backgroundColor: Colors.transparent,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 15.0), 
+          child: CircleAvatar(
+            backgroundColor: isDark ? Colors.grey[800] : Colors.grey[100], 
+            child: IconButton(icon: const Icon(Icons.menu_open_rounded), onPressed: () => Scaffold.of(context).openDrawer())
+          )
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 15.0), 
+            child: CircleAvatar(
+              backgroundColor: isDark ? Colors.grey[800] : Colors.grey[100], 
+              child: IconButton(icon: const Icon(Icons.shopping_bag_outlined), onPressed: () => Navigator.pushNamed(context, '/cart'))
+            )
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -158,7 +192,16 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
             const SizedBox(height: 20),
             Row(
               children: [
-                Expanded(child: Container(height: 50, decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(10)), child: TextField(onChanged: (value) => setState(() => searchQuery = value), decoration: const InputDecoration(border: InputBorder.none, prefixIcon: Icon(Icons.search, color: Colors.grey), hintText: "Search...", hintStyle: TextStyle(color: Colors.grey), contentPadding: EdgeInsets.symmetric(vertical: 15))))),
+                Expanded(
+                  child: Container(
+                    height: 50, 
+                    decoration: BoxDecoration(color: isDark ? Colors.grey[800] : Colors.grey[100], borderRadius: BorderRadius.circular(10)), 
+                    child: TextField(
+                      onChanged: (value) => setState(() => searchQuery = value), 
+                      decoration: const InputDecoration(border: InputBorder.none, prefixIcon: Icon(Icons.search, color: Colors.grey), hintText: "Search...", hintStyle: TextStyle(color: Colors.grey), contentPadding: EdgeInsets.symmetric(vertical: 15))
+                    )
+                  )
+                ),
                 const SizedBox(width: 10),
                 Container(height: 50, width: 50, decoration: BoxDecoration(color: const Color(0xFF9775FA), borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.mic, color: Colors.white)),
               ],
@@ -166,12 +209,11 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
             const SizedBox(height: 20),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text("Choose Brand", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)), GestureDetector(onTap: () => setState(() => selectedBrand = "All"), child: const Text("View All", style: TextStyle(color: Colors.grey)))]),
             const SizedBox(height: 15),
-            SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: brands.map((brand) => GestureDetector(onTap: () => setState(() => selectedBrand = brand["name"]!), child: Container(margin: const EdgeInsets.only(right: 10), padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), decoration: BoxDecoration(color: selectedBrand == brand["name"] ? const Color(0xFF9775FA) : Colors.grey[100], borderRadius: BorderRadius.circular(10)), child: Row(children: [Container(padding: const EdgeInsets.all(5), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.branding_watermark, size: 20, color: Colors.black)), const SizedBox(width: 10), Text(brand["name"]!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: selectedBrand == brand["name"] ? Colors.white : Colors.black))])) )).toList())),
+            SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: brands.map((brand) => GestureDetector(onTap: () => setState(() => selectedBrand = brand["name"]!), child: Container(margin: const EdgeInsets.only(right: 10), padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), decoration: BoxDecoration(color: selectedBrand == brand["name"] ? const Color(0xFF9775FA) : (isDark ? Colors.grey[800] : Colors.grey[100]), borderRadius: BorderRadius.circular(10)), child: Row(children: [Container(padding: const EdgeInsets.all(5), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.branding_watermark, size: 20, color: Colors.black)), const SizedBox(width: 10), Text(brand["name"]!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: selectedBrand == brand["name"] ? Colors.white : (isDark ? Colors.white : Colors.black)))])) )).toList())),
             const SizedBox(height: 20),
             const Text("New Arrival", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
             const SizedBox(height: 10),
             
-            // --- هنا الشغل كله: بحث + مفضلة فايربيز ---
             Expanded(
               child: FutureBuilder<List<Product>>(
                 future: futureProducts,
@@ -196,7 +238,6 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
                             Expanded(
                               child: Container(
                                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), image: DecorationImage(image: NetworkImage(product.images.isNotEmpty ? product.images[0] : ''), fit: BoxFit.cover)),
-                                // --- أيقونة القلب متصلة بالفايربيز ---
                                 child: Align(
                                   alignment: Alignment.topRight,
                                   child: Padding(
@@ -208,7 +249,7 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
                                         return InkWell(
                                           onTap: () => WishlistService().toggleWishlist(product),
                                           child: CircleAvatar(
-                                            backgroundColor: Colors.white.withOpacity(0.8),
+                                            backgroundColor: isDark ? Colors.black.withOpacity(0.5) : Colors.white.withOpacity(0.8),
                                             radius: 16,
                                             child: Icon(isFav ? Icons.favorite : Icons.favorite_border, color: isFav ? Colors.red : Colors.grey, size: 20),
                                           ),

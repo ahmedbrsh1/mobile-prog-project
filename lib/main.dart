@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 
+// استيراد الصفحات
 import 'screens/intro/splash_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/signup_screen.dart';
@@ -13,13 +13,12 @@ import 'screens/cart/cart_screen.dart';
 import 'screens/cart/success_screen.dart';
 import 'screens/profile/wishlist_screen.dart';
 
+// تعريف منبه الثيم (Theme Notifier) للتحكم في الدارك مود من أي مكان
+final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
+
 void main() async {
-  // Required before Firebase initialization
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   runApp(const LazaApp());
 }
 
@@ -28,69 +27,56 @@ class LazaApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Laza',
-      theme: ThemeData(
-        primaryColor: const Color(0xFF9775FA),
-        scaffoldBackgroundColor: Colors.white,
-        textTheme: GoogleFonts.interTextTheme(),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          iconTheme: IconThemeData(color: Colors.black),
-          titleTextStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+    // نستخدم ValueListenableBuilder لمراقبة تغيير الثيم
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeNotifier,
+      builder: (_, ThemeMode currentMode, __) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Laza',
+          
+          // إعدادات الثيم الفاتح (Light Theme)
+          theme: ThemeData(
+            brightness: Brightness.light,
+            primaryColor: const Color(0xFF9775FA),
+            scaffoldBackgroundColor: Colors.white,
+            textTheme: GoogleFonts.interTextTheme(),
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              iconTheme: IconThemeData(color: Colors.black),
+              titleTextStyle: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF9775FA),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            padding: const EdgeInsets.symmetric(vertical: 15),
+
+          // إعدادات الثيم الغامق (Dark Theme)
+          darkTheme: ThemeData(
+            brightness: Brightness.dark,
+            primaryColor: const Color(0xFF9775FA),
+            scaffoldBackgroundColor: const Color(0xFF1B1B1B), // لون رمادي غامق احترافي
+            textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Color(0xFF1B1B1B),
+              elevation: 0,
+              iconTheme: IconThemeData(color: Colors.white),
+              titleTextStyle: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ),
-        ),
-      ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) =>  SplashScreen(),   
-        '/login': (context) =>  LoginScreen(),
-        '/signup': (context) =>  SignupScreen(),
-        '/home': (context) =>  MainWrapper(),
-        '/details': (context) =>  ProductDetailsScreen(),
-        '/cart': (context) =>  CartScreen(),
-        '/wishlist': (context) =>  WishlistScreen(),
-        '/success': (context) =>  SuccessScreen(),
-      },
-    );
-  }
-}
 
-/// Decides where the user goes on app startup
-class AuthGate extends StatelessWidget {
-  const AuthGate({super.key});
+          themeMode: currentMode, // يحدد الوضع الحالي (Light أو Dark)
 
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        // Waiting for Firebase
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        // Logged in
-        if (snapshot.hasData) {
-          return const MainWrapper();
-        }
-
-        // Not logged in
-        return const LoginScreen();
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const SplashScreen(),
+            '/login': (context) => const LoginScreen(),
+            '/signup': (context) => const SignupScreen(),
+            '/home': (context) => const MainWrapper(),
+            '/details': (context) => const ProductDetailsScreen(),
+            '/cart': (context) => const CartScreen(),
+            '/wishlist': (context) => const WishlistScreen(),
+            '/success': (context) => const SuccessScreen(),
+          },
+        );
       },
     );
   }
