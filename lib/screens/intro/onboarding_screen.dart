@@ -17,10 +17,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: PageView(
         controller: _controller,
         children: [
-          // الشاشة 1: اللوجو فقط
           const Center(child: Icon(Icons.flash_on, size: 100, color: Colors.white)), 
           
-          // الشاشة 2: الصورة والنصوص (كما في التصميم)
           Container(
             color: const Color(0xFF9775FA),
             child: Column(
