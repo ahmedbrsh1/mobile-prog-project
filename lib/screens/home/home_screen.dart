@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // import مهم
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../services/api_service.dart';
 import '../../models/product_model.dart';
-import '../../services/wishlist_service.dart'; // استدعاء السيرفيس الجديد
+import '../../services/wishlist_service.dart';
 import '../cart/cart_screen.dart';
+import '../cart/orders_screen.dart'; // 1. استدعاء صفحة الطلبات الجديدة
 import '../profile/wishlist_screen.dart';
 import '../profile/profile_screen.dart';
 import '../profile/account_info_screen.dart';
@@ -22,7 +23,7 @@ class _MainWrapperState extends State<MainWrapper> {
     const HomeScreenContent(),
     const WishlistScreen(),
     const CartScreen(),
-    const ProfileScreen(),
+    const OrdersScreen(), // 2. حطينا صفحة الطلبات مكان البروفايل/المحفظة
   ];
 
   @override
@@ -40,7 +41,8 @@ class _MainWrapperState extends State<MainWrapper> {
           BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.favorite_border), activeIcon: Icon(Icons.favorite), label: "Wishlist"),
           BottomNavigationBarItem(icon: Icon(Icons.shopping_bag_outlined), activeIcon: Icon(Icons.shopping_bag), label: "Cart"),
-          BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet_outlined), activeIcon: Icon(Icons.account_balance_wallet), label: "Wallet"),
+          // 3. غيرنا الأيقونة والاسم لـ Orders
+          BottomNavigationBarItem(icon: Icon(Icons.receipt_long_outlined), activeIcon: Icon(Icons.receipt_long), label: "Orders"),
         ],
       ),
     );
@@ -86,7 +88,7 @@ class _MainWrapperState extends State<MainWrapper> {
           const SizedBox(height: 10),
           _drawerItem(Icons.info_outline, "Account Information", onTap: () => navigateTo(const AccountInfoScreen())),
           _drawerItem(Icons.lock_outline, "Password"),
-          _drawerItem(Icons.shopping_bag_outlined, "Order", onTap: () => navigateTo(const CartScreen())),
+          _drawerItem(Icons.shopping_bag_outlined, "Order", onTap: () => navigateTo(const OrdersScreen())), // ربطناها هنا كمان
           _drawerItem(Icons.credit_card, "My Cards", onTap: () => navigateTo(const ProfileScreen())),
           _drawerItem(Icons.favorite_border, "Wishlist", onTap: () => navigateTo(const WishlistScreen())),
           _drawerItem(Icons.settings_outlined, "Settings"),
@@ -109,6 +111,8 @@ class _MainWrapperState extends State<MainWrapper> {
   }
 }
 
+// ... كلاس HomeScreenContent اللي تحت سيبه زي ما هو (لأنه طويل ومفيهوش تغيير) ...
+// (لو عايزني ابعته كله تاني قولي، بس التغيير كله كان في MainWrapper فوق)
 class HomeScreenContent extends StatefulWidget {
   const HomeScreenContent({super.key});
   @override

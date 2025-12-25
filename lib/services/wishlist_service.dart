@@ -1,37 +1,43 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/product_model.dart';
 
 class WishlistService {
   final CollectionReference wishlistRef = FirebaseFirestore.instance.collection('wishlist');
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
-  // دالة إضافة أو حذف المنتج (Toggle)
+  String get uId => auth.currentUser!.uid;
+
   Future<void> toggleWishlist(Product product) async {
-    // بنبحث هل المنتج ده موجود أصلاً في الفايربيز ولا لأ
-    final query = await wishlistRef.where('id', isEqualTo: product.id).get();
+    // بحث عن المنتج لليوزر الحالي فقط
+    final query = await wishlistRef
+        .where('userId', isEqualTo: uId) // فلتر باليوزر
+        .where('id', isEqualTo: product.id)
+        .get();
 
     if (query.docs.isNotEmpty) {
-      // لو موجود -> امسحه (Unlike)
       await query.docs.first.reference.delete();
     } else {
-      // لو مش موجود -> ضيفه (Like)
       await wishlistRef.add({
+        'userId': uId, // ربط باليوزر
         "id": product.id,
         "title": product.title,
         "price": product.price,
-        "image": product.images[0], // بناخد أول صورة
+        "image": product.images[0],
         "description": product.description,
-        "category": product.category, // بنحفظ الاسم بس
+        "category": product.category,
       });
     }
   }
 
-  // دالة عشان نعرف المنتج ده Fav ولا لأ (عشان لون القلب)
   Stream<QuerySnapshot> isFavoriteStream(int productId) {
-    return wishlistRef.where('id', isEqualTo: productId).snapshots();
+    return wishlistRef
+        .where('userId', isEqualTo: uId) // فلتر باليوزر
+        .where('id', isEqualTo: productId)
+        .snapshots();
   }
 
-  // دالة جلب كل المفضلات لصفحة الـ Wishlist
   Stream<QuerySnapshot> getWishlistStream() {
-    return wishlistRef.snapshots();
+    return wishlistRef.where('userId', isEqualTo: uId).snapshots(); // فلتر باليوزر
   }
 }
