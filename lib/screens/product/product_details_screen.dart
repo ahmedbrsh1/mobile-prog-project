@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/product_model.dart';
 import '../../data/app_data.dart';
+import '../../services/cart_service.dart'; // استدعاء السيرفيس
 
 class ProductDetailsScreen extends StatefulWidget {
   const ProductDetailsScreen({super.key});
@@ -12,7 +13,7 @@ class ProductDetailsScreen extends StatefulWidget {
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   String selectedSize = "M";
 
-  // دالة إضافة مراجعة (Dialog)
+  // دالة إضافة مراجعة (Dialog) - زي ما هي
   void _showAddReviewDialog() {
     showDialog(
       context: context,
@@ -75,15 +76,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   Text(product.description, style: const TextStyle(color: Colors.grey, height: 1.5)),
                   const SizedBox(height: 20),
                   
-                  // --- قسم المراجعات (Reviews) ---
+                  // --- قسم المراجعات ---
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                     const Text("Reviews", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     TextButton(onPressed: _showAddReviewDialog, child: const Text("Add Review", style: TextStyle(color: Color(0xFF9775FA))))
                   ]),
                   
-                  // مراجعة 1
                   _buildReviewItem("Ronald Richards", "13 Sep, 2020", 4.8, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque malesuada eget vitae amet..."),
-                  // مراجعة 2
                   _buildReviewItem("Jenny Wilson", "12 Sep, 2020", 4.5, "Great product! highly recommended."),
                 ],
               ),
@@ -95,7 +94,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         padding: const EdgeInsets.all(20),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF9775FA), padding: const EdgeInsets.symmetric(vertical: 18), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-          onPressed: () { AppData.addToCart(product); ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Added to Cart"))); },
+          // --- هنا التعديل: استدعاء السيرفيس ---
+          onPressed: () {
+            CartService().addToCart(product, selectedSize).then((_) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text("Added to Cart Successfully! 🛒"),
+                backgroundColor: Colors.green,
+              ));
+            }).catchError((e) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red));
+            });
+          },
           child: const Text("Add to Cart", style: TextStyle(color: Colors.white, fontSize: 18)),
         ),
       ),
