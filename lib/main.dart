@@ -63,7 +63,7 @@ class LazaApp extends StatelessWidget {
             ),
           ),
 
-          themeMode: currentMode, // يحدد الوضع الحالي (Light أو Dark)
+          themeMode: currentMode,
 
           initialRoute: '/',
           routes: {
