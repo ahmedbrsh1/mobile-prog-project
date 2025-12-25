@@ -4,14 +4,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 
-// الصفحات الأساسية فقط
-import 'screens/intro/onboarding_screen.dart';
+import 'screens/intro/splash_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/signup_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'screens/product/product_details_screen.dart';
 import 'screens/cart/cart_screen.dart';
 import 'screens/cart/success_screen.dart';
+import 'screens/profile/wishlist_screen.dart';
 
 void main() async {
   // Required before Firebase initialization
@@ -45,18 +45,24 @@ class LazaApp extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF9775FA),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            padding: const EdgeInsets.symmetric(vertical: 15),
+          ),
+        ),
       ),
-
-      // ✅ SINGLE source of truth for startup
-      home: const AuthGate(),
-
+      initialRoute: '/',
       routes: {
-        '/login': (context) => LoginScreen(),
-        '/signup': (context) => SignupScreen(),
-        '/home': (context) => MainWrapper(),
-        '/details': (context) => ProductDetailsScreen(),
-        '/cart': (context) => CartScreen(),
-        '/success': (context) => SuccessScreen(),
+        '/': (context) =>  SplashScreen(),   
+        '/login': (context) =>  LoginScreen(),
+        '/signup': (context) =>  SignupScreen(),
+        '/home': (context) =>  MainWrapper(),
+        '/details': (context) =>  ProductDetailsScreen(),
+        '/cart': (context) =>  CartScreen(),
+        '/wishlist': (context) =>  WishlistScreen(),
+        '/success': (context) =>  SuccessScreen(),
       },
     );
   }
@@ -80,11 +86,11 @@ class AuthGate extends StatelessWidget {
 
         // Logged in
         if (snapshot.hasData) {
-          return MainWrapper();
+          return const MainWrapper();
         }
 
         // Not logged in
-        return LoginScreen();
+        return const LoginScreen();
       },
     );
   }
