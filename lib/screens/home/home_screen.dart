@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/api_service.dart';
 import '../../models/product_model.dart';
 import '../../data/app_data.dart';
 import '../cart/cart_screen.dart';
 import '../profile/wishlist_screen.dart';
-import '../profile/profile_screen.dart'; // سنستخدمها كـ Wallet مؤقتاً
-import 'package:firebase_auth/firebase_auth.dart';
+import '../profile/profile_screen.dart';
+import '../profile/account_info_screen.dart'; // فقط Drawer الجديد
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});
@@ -16,12 +17,11 @@ class MainWrapper extends StatefulWidget {
 class _MainWrapperState extends State<MainWrapper> {
   int _currentIndex = 0;
 
-  // الصفحات الخاصة بالـ Bottom Navigation
   final List<Widget> _pages = [
-    const HomeScreenContent(),
+    const HomeScreenContent(), // لا نغير هذا
     const WishlistScreen(),
     const CartScreen(),
-    const ProfileScreen(), // Wallet Tab -> يعرض الكروت
+    const ProfileScreen(),
   ];
 
   @override
@@ -61,76 +61,88 @@ class _MainWrapperState extends State<MainWrapper> {
     );
   }
 
-  // القائمة الجانبية المطابقة للتصميم
+  // دمج Drawer من homescreen 2 مع الحفاظ على المحتوى الأصلي
   Widget _buildDrawer(BuildContext context) {
     bool isDarkMode = false;
+
+    void navigateTo(Widget page) {
+      Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+    }
+
     return Drawer(
       child: Column(
         children: [
           const SizedBox(height: 50),
-          // جزء البروفايل مع زر 3 Orders
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Row(
-              children: [
-                const CircleAvatar(
-                  radius: 25,
-                  backgroundImage: NetworkImage(
-                    "https://i.pravatar.cc/300",
-                  ), // صورة وهمية
-                ),
-                const SizedBox(width: 15),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Mrh Raju",
+
+          // المنطقة الخاصة بالبروفايل مع الانتقال لصفحة AccountInfo
+          InkWell(
+            onTap: () => navigateTo(const AccountInfoScreen()),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 10,
+              ),
+              child: Row(
+                children: [
+                  const CircleAvatar(
+                    radius: 25,
+                    backgroundImage: NetworkImage("https://i.pravatar.cc/300"),
+                  ),
+                  const SizedBox(width: 15),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Mrh Raju",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          const Text(
+                            "Verified Profile",
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
+                          const SizedBox(width: 5),
+                          Icon(
+                            Icons.verified,
+                            size: 14,
+                            color: Colors.green[400],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: const Text(
+                      "3 Orders",
                       style: TextStyle(
+                        fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        color: Colors.grey,
                       ),
                     ),
-                    Row(
-                      children: [
-                        const Text(
-                          "Verified Profile",
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                        const SizedBox(width: 5),
-                        Icon(
-                          Icons.verified,
-                          size: 14,
-                          color: Colors.green[400],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: const Text(
-                    "3 Orders",
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
+
           const SizedBox(height: 30),
 
-          // Dark Mode Switch
+          // Dark Mode
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Row(
@@ -153,20 +165,33 @@ class _MainWrapperState extends State<MainWrapper> {
           ),
 
           const SizedBox(height: 10),
-          // القائمة
-          _drawerItem(Icons.info_outline, "Account Information"),
+
+          // القائمة الجانبية مع التنقل
+          _drawerItem(
+            Icons.info_outline,
+            "Account Information",
+            onTap: () => navigateTo(const AccountInfoScreen()),
+          ),
           _drawerItem(Icons.lock_outline, "Password"),
-          _drawerItem(Icons.shopping_bag_outlined, "Order"),
-          _drawerItem(Icons.credit_card, "My Cards"),
+          _drawerItem(
+            Icons.shopping_bag_outlined,
+            "Order",
+            onTap: () => navigateTo(const CartScreen()),
+          ),
+          _drawerItem(
+            Icons.credit_card,
+            "My Cards",
+            onTap: () => navigateTo(const ProfileScreen()),
+          ),
           _drawerItem(
             Icons.favorite_border,
             "Wishlist",
-            onTap: () => Navigator.pushNamed(context, '/wishlist'),
+            onTap: () => navigateTo(const WishlistScreen()),
           ),
           _drawerItem(Icons.settings_outlined, "Settings"),
 
           const Spacer(),
-          // زر الخروج
+
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: InkWell(
@@ -205,7 +230,7 @@ class _MainWrapperState extends State<MainWrapper> {
   }
 }
 
-// محتوى الصفحة الرئيسية
+// HomeScreenContent كما في homescreen 1 بدون أي تعديل
 class HomeScreenContent extends StatefulWidget {
   const HomeScreenContent({super.key});
   @override
@@ -214,10 +239,9 @@ class HomeScreenContent extends StatefulWidget {
 
 class _HomeScreenContentState extends State<HomeScreenContent> {
   late Future<List<Product>> futureProducts;
-  String selectedBrand = "All"; // للفلترة
+  String selectedBrand = "All";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // اللوجوهات الحقيقية (URLs)
   final List<Map<String, String>> brands = [
     {
       "name": "Adidas",
@@ -295,7 +319,6 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
               style: TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 20),
-
             // Search
             Row(
               children: [
@@ -329,8 +352,7 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
               ],
             ),
             const SizedBox(height: 20),
-
-            // Brands Section with Logos
+            // Brands
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -376,7 +398,6 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                // عرض لوجو البراند (استخدام ايقونة مؤقتة لضمان العمل، استبدلها ب Image.network لو الروابط شغالة عندك)
                                 child: const Icon(
                                   Icons.branding_watermark,
                                   size: 20,
@@ -402,23 +423,19 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
                     .toList(),
               ),
             ),
-
             const SizedBox(height: 20),
             const Text(
               "New Arrival",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
             ),
             const SizedBox(height: 10),
-
-            // Products Grid with Logic Filter
+            // Products Grid
             Expanded(
               child: FutureBuilder<List<Product>>(
                 future: futureProducts,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData)
                     return const Center(child: CircularProgressIndicator());
-
-                  // Filter Logic: البحث في العنوان
                   var displayList = snapshot.data!;
                   if (selectedBrand != "All") {
                     displayList = displayList
@@ -429,12 +446,10 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
                         )
                         .toList();
                   }
-
                   if (displayList.isEmpty)
                     return const Center(
                       child: Text("No items found for this brand"),
                     );
-
                   return GridView.builder(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
