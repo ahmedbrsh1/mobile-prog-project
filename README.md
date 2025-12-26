@@ -101,6 +101,13 @@ android/app/google-services.json
 - Build → Firestore Database
 - Create database (Test or Production mode)
 
+<img width="1725" height="846" alt="image" src="https://github.com/user-attachments/assets/6f84286e-8df4-48bb-abf9-5c5514138775" />
+<img width="1803" height="834" alt="image" src="https://github.com/user-attachments/assets/f9db764b-b2d5-4e33-8f34-a8b65b9040a1" />
+<img width="1785" height="836" alt="image" src="https://github.com/user-attachments/assets/d6bf7743-646f-44f3-acb5-ee61f29000f9" />
+<img width="1773" height="842" alt="image" src="https://github.com/user-attachments/assets/80ea68e4-1f59-48cb-8b1c-d8b0169bbfd3" />
+
+
+
 ---
 
 ## 🛡️ Firestore Security Rules
