@@ -9,8 +9,6 @@ class AccountInfoScreen extends StatefulWidget {
 }
 
 class _AccountInfoScreenState extends State<AccountInfoScreen> {
-  // Initialize controllers immediately
-  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -18,14 +16,12 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
   void initState() {
     super.initState();
     final User? user = FirebaseAuth.instance.currentUser;
-    _usernameController.text = user?.displayName ?? "";
     _emailController.text = user?.email ?? "raju@example.com";
     _passwordController.text = "********";
   }
 
   @override
   void dispose() {
-    _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -85,7 +81,6 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
             const SizedBox(height: 30),
 
             // Editable fields
-            _buildEditableTile("Username", _usernameController),
             _buildEditableTile("Email Address", _emailController),
             _buildEditableTile(
               "Password",
