@@ -32,7 +32,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
       if (!mounted) return;
 
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushNamed(context, '/home');
     } on FirebaseAuthException catch (e) {
       setState(() {
         _error = e.message;

@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushNamed(context, '/home');
     } on FirebaseAuthException catch (e) {
       setState(() {
         _error = e.message ?? 'Login failed';
