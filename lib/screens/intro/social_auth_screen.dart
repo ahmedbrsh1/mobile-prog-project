@@ -22,16 +22,20 @@ class SocialAuthScreen extends StatelessWidget {
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
             const Spacer(),
-            
+
             // أزرار السوشيال
             _buildSocialButton("Facebook", Colors.blue[900]!, Icons.facebook),
             const SizedBox(height: 15),
-            _buildSocialButton("Twitter", Colors.blue[400]!, Icons.flutter_dash), // استخدمت ايقونة تقريبية
+            _buildSocialButton(
+              "Twitter",
+              Colors.blue[400]!,
+              Icons.flutter_dash,
+            ), // استخدمت ايقونة تقريبية
             const SizedBox(height: 15),
             _buildSocialButton("Google", Colors.red[600]!, Icons.g_mobiledata),
 
             const Spacer(),
-            
+
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -41,26 +45,39 @@ class SocialAuthScreen extends StatelessWidget {
                     // الذهاب لصفحة تسجيل الدخول القديمة
                     Navigator.pushNamed(context, '/login');
                   },
-                  child: const Text("Signin", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF9775FA))),
-                )
+                  child: const Text(
+                    "Signin",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF9775FA),
+                    ),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 20),
-            
+
             // زر إنشاء حساب
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
+                key: const Key(
+                  'createAccountButton',
+                ), // <-- important for testing
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF9775FA), // بنفسجي
+                  backgroundColor: const Color(0xFF9775FA), // purple
                   padding: const EdgeInsets.symmetric(vertical: 20),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 onPressed: () {
-                  // الذهاب لصفحة إنشاء حساب القديمة
                   Navigator.pushNamed(context, '/signup');
                 },
-                child: const Text("Create an Account", style: TextStyle(color: Colors.white, fontSize: 17)),
+                child: const Text(
+                  "Create an Account",
+                  style: TextStyle(color: Colors.white, fontSize: 17),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -83,7 +100,14 @@ class SocialAuthScreen extends StatelessWidget {
         children: [
           Icon(icon, color: Colors.white),
           const SizedBox(width: 10),
-          Text(text, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+          Text(
+            text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
         ],
       ),
     );

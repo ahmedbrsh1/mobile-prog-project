@@ -34,7 +34,7 @@ class LazaApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Laza',
-          
+
           // إعدادات الثيم الفاتح (Light Theme)
           theme: ThemeData(
             brightness: Brightness.light,
@@ -45,7 +45,11 @@ class LazaApp extends StatelessWidget {
               backgroundColor: Colors.white,
               elevation: 0,
               iconTheme: IconThemeData(color: Colors.black),
-              titleTextStyle: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+              titleTextStyle: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
 
@@ -53,13 +57,19 @@ class LazaApp extends StatelessWidget {
           darkTheme: ThemeData(
             brightness: Brightness.dark,
             primaryColor: const Color(0xFF9775FA),
-            scaffoldBackgroundColor: const Color(0xFF1B1B1B), // لون رمادي غامق احترافي
+            scaffoldBackgroundColor: const Color(
+              0xFF1B1B1B,
+            ), // لون رمادي غامق احترافي
             textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
             appBarTheme: const AppBarTheme(
               backgroundColor: Color(0xFF1B1B1B),
               elevation: 0,
               iconTheme: IconThemeData(color: Colors.white),
-              titleTextStyle: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+              titleTextStyle: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
 

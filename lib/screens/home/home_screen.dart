@@ -30,6 +30,7 @@ class _MainWrapperState extends State<MainWrapper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('homeScreen'),
       drawer: _buildDrawer(context),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -475,6 +476,7 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
                     itemBuilder: (context, index) {
                       final product = displayList[index];
                       return GestureDetector(
+                        key: Key('productItem$index'),
                         onTap: () => Navigator.pushNamed(
                           context,
                           '/details',

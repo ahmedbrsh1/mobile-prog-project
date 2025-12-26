@@ -80,20 +80,26 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
             const SizedBox(height: 50),
 
+            // Username field (ignored for testing)
             TextFormField(
               controller: _usernameController,
+              key: const Key('usernameField'),
               decoration: const InputDecoration(labelText: "Username"),
             ),
             const SizedBox(height: 20),
 
+            // Email field with key
             TextFormField(
               controller: _emailController,
+              key: const Key('emailField'),
               decoration: const InputDecoration(labelText: "Email Address"),
             ),
             const SizedBox(height: 20),
 
+            // Password field with key
             TextFormField(
               controller: _passwordController,
+              key: const Key('passwordField'),
               decoration: const InputDecoration(labelText: "Password"),
               obscureText: true,
             ),
@@ -104,12 +110,14 @@ class _SignupScreenState extends State<SignupScreen> {
 
             const Spacer(),
 
+            // Sign Up button with key
             SizedBox(
               width: double.infinity,
               height: 50,
               child: _loading
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
+                      key: const Key('signupButton'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF9775FA),
                       ),
