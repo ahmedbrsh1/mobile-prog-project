@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -10,6 +11,7 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final _auth = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
 
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -25,10 +27,26 @@ class _SignupScreenState extends State<SignupScreen> {
     });
 
     try {
-      await _auth.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+      // 1. Create user in Firebase Auth
+      final UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
+
+      final User? user = userCredential.user;
+      if (user == null)
+        throw FirebaseAuthException(
+          code: 'USER_NULL',
+          message: 'User creation failed',
+        );
+
+      // 2. Store minimal user data in Firestore
+      await _firestore.collection('users').doc(user.uid).set({
+        'username': _usernameController.text.trim(),
+        'email': _emailController.text.trim(),
+        'createdAt': FieldValue.serverTimestamp(),
+      });
 
       if (!mounted) return;
 
@@ -36,6 +54,10 @@ class _SignupScreenState extends State<SignupScreen> {
     } on FirebaseAuthException catch (e) {
       setState(() {
         _error = e.message;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
       });
     } finally {
       setState(() {

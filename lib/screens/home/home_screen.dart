@@ -67,8 +67,7 @@ class _MainWrapperState extends State<MainWrapper> {
   Widget _buildDrawer(BuildContext context) {
     void navigateTo(Widget page) {
       Navigator.pop(context);
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => page));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => page));
     }
 
     return Drawer(
@@ -78,39 +77,47 @@ class _MainWrapperState extends State<MainWrapper> {
           InkWell(
             onTap: () => navigateTo(const AccountInfoScreen()),
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 10,
+              ),
               child: Row(
                 children: [
-                  const CircleAvatar(
-                    radius: 25,
-                    backgroundImage: NetworkImage("https://i.pravatar.cc/300"),
-                  ),
+                  const CircleAvatar(radius: 25, child: Icon(Icons.person)),
                   const SizedBox(width: 15),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Mrh Raju",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
+                      Text(
+                        '${(FirebaseAuth.instance.currentUser?.email ?? '').substring(0, ((FirebaseAuth.instance.currentUser?.email ?? '').length >= 9 ? 9 : (FirebaseAuth.instance.currentUser?.email ?? '').length))}...',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
+
                       Row(
                         children: [
-                          const Text("Verified Profile",
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 12)),
+                          const Text(
+                            "Verified Profile",
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
                           const SizedBox(width: 5),
-                          Icon(Icons.verified,
-                              size: 14, color: Colors.green[400]),
+                          Icon(
+                            Icons.verified,
+                            size: 14,
+                            color: Colors.green[400],
+                          ),
                         ],
                       ),
                     ],
                   ),
                   const Spacer(),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
                       borderRadius: BorderRadius.circular(5),
@@ -118,9 +125,10 @@ class _MainWrapperState extends State<MainWrapper> {
                     child: const Text(
                       "3 Orders",
                       style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey),
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                 ],
@@ -150,8 +158,9 @@ class _MainWrapperState extends State<MainWrapper> {
                       value: currentMode == ThemeMode.dark,
                       activeColor: const Color(0xFF9775FA),
                       onChanged: (val) {
-                        themeNotifier.value =
-                            val ? ThemeMode.dark : ThemeMode.light;
+                        themeNotifier.value = val
+                            ? ThemeMode.dark
+                            : ThemeMode.light;
                       },
                     );
                   },
@@ -161,15 +170,27 @@ class _MainWrapperState extends State<MainWrapper> {
           ),
 
           const SizedBox(height: 10),
-          _drawerItem(Icons.info_outline, "Account Information",
-              onTap: () => navigateTo(const AccountInfoScreen())),
+          _drawerItem(
+            Icons.info_outline,
+            "Account Information",
+            onTap: () => navigateTo(const AccountInfoScreen()),
+          ),
           _drawerItem(Icons.lock_outline, "Password"),
-          _drawerItem(Icons.shopping_bag_outlined, "Order",
-              onTap: () => navigateTo(const OrdersScreen())),
-          _drawerItem(Icons.credit_card, "My Cards",
-              onTap: () => navigateTo(const ProfileScreen())),
-          _drawerItem(Icons.favorite_border, "Wishlist",
-              onTap: () => navigateTo(const WishlistScreen())),
+          _drawerItem(
+            Icons.shopping_bag_outlined,
+            "Order",
+            onTap: () => navigateTo(const OrdersScreen()),
+          ),
+          _drawerItem(
+            Icons.credit_card,
+            "My Cards",
+            onTap: () => navigateTo(const ProfileScreen()),
+          ),
+          _drawerItem(
+            Icons.favorite_border,
+            "Wishlist",
+            onTap: () => navigateTo(const WishlistScreen()),
+          ),
           _drawerItem(Icons.settings_outlined, "Settings"),
           const Spacer(),
           Padding(
@@ -184,9 +205,13 @@ class _MainWrapperState extends State<MainWrapper> {
                 children: [
                   Icon(Icons.logout, color: Colors.red),
                   SizedBox(width: 10),
-                  Text("Logout",
-                      style: TextStyle(
-                          color: Colors.red, fontWeight: FontWeight.bold)),
+                  Text(
+                    "Logout",
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -219,26 +244,11 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final List<Map<String, dynamic>> brands = [
-    {
-      "name": "All",
-      "icon": Icons.grid_view_rounded,
-    },
-    {
-      "name": "Adidas",
-      "logo": "assets/images/adidas.png",
-    },
-    {
-      "name": "Nike",
-      "logo": "assets/images/nike.png",
-    },
-    {
-      "name": "Fila",
-      "logo": "assets/images/fila.png",
-    },
-    {
-      "name": "Puma",
-      "logo": "assets/images/puma.png",
-    },
+    {"name": "All", "icon": Icons.grid_view_rounded},
+    {"name": "Adidas", "logo": "assets/images/adidas.png"},
+    {"name": "Nike", "logo": "assets/images/nike.png"},
+    {"name": "Fila", "logo": "assets/images/fila.png"},
+    {"name": "Puma", "logo": "assets/images/puma.png"},
   ];
 
   @override
@@ -259,8 +269,7 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
         leading: Padding(
           padding: const EdgeInsets.only(left: 15.0),
           child: CircleAvatar(
-            backgroundColor:
-                isDark ? Colors.grey[800] : Colors.grey[100],
+            backgroundColor: isDark ? Colors.grey[800] : Colors.grey[100],
             child: IconButton(
               icon: const Icon(Icons.menu_open_rounded),
               onPressed: () => Scaffold.of(context).openDrawer(),
@@ -271,8 +280,7 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
           Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: CircleAvatar(
-              backgroundColor:
-                  isDark ? Colors.grey[800] : Colors.grey[100],
+              backgroundColor: isDark ? Colors.grey[800] : Colors.grey[100],
               child: IconButton(
                 icon: const Icon(Icons.shopping_bag_outlined),
                 onPressed: () => Navigator.pushNamed(context, '/cart'),
@@ -286,10 +294,14 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Hello",
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-            const Text("Welcome to Laza.",
-                style: TextStyle(color: Colors.grey)),
+            const Text(
+              "Hello",
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            ),
+            const Text(
+              "Welcome to Laza.",
+              style: TextStyle(color: Colors.grey),
+            ),
             const SizedBox(height: 20),
             Row(
               children: [
@@ -301,8 +313,7 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: TextField(
-                      onChanged: (value) =>
-                          setState(() => searchQuery = value),
+                      onChanged: (value) => setState(() => searchQuery = value),
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         prefixIcon: Icon(Icons.search, color: Colors.grey),
@@ -329,75 +340,96 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Choose Brand",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+                const Text(
+                  "Choose Brand",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                ),
                 GestureDetector(
                   onTap: () => setState(() => selectedBrand = "All"),
-                  child: const Text("View All",
-                      style: TextStyle(color: Colors.grey)),
+                  child: const Text(
+                    "View All",
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 15),
-            
+
             // --- الجزء الخاص بالبراندات (تم وضع التعديل هنا) ---
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: brands.map((brand) => GestureDetector(
-                  onTap: () => setState(() => selectedBrand = brand["name"]!),
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 10),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: selectedBrand == brand["name"]
-                          ? const Color(0xFF9775FA)
-                          : (isDark ? Colors.grey[800] : Colors.grey[100]),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(5),
+                children: brands
+                    .map(
+                      (brand) => GestureDetector(
+                        onTap: () =>
+                            setState(() => selectedBrand = brand["name"]!),
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 10),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          height: 35,
-                          width: 35,
-                          child: brand["name"] == "All"
-                              ? const Icon(Icons.grid_view_rounded,
-                                  size: 20, color: Colors.black)
-                              : Image.asset(
-                                  brand["logo"],
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(Icons.error, size: 15),
-                                ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          brand["name"]!,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
                             color: selectedBrand == brand["name"]
-                                ? Colors.white
-                                : (isDark ? Colors.white : Colors.black),
+                                ? const Color(0xFF9775FA)
+                                : (isDark
+                                      ? Colors.grey[800]
+                                      : Colors.grey[100]),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                        )
-                      ],
-                    ),
-                  ),
-                )).toList(),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                height: 35,
+                                width: 35,
+                                child: brand["name"] == "All"
+                                    ? const Icon(
+                                        Icons.grid_view_rounded,
+                                        size: 20,
+                                        color: Colors.black,
+                                      )
+                                    : Image.asset(
+                                        brand["logo"],
+                                        fit: BoxFit.contain,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                const Icon(
+                                                  Icons.error,
+                                                  size: 15,
+                                                ),
+                                      ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                brand["name"]!,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: selectedBrand == brand["name"]
+                                      ? Colors.white
+                                      : (isDark ? Colors.white : Colors.black),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
               ),
             ),
-            
+
             const SizedBox(height: 20),
-            const Text("New Arrival",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+            const Text(
+              "New Arrival",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+            ),
             const SizedBox(height: 10),
 
             Expanded(
@@ -411,16 +443,20 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
                   var displayList = snapshot.data!;
                   if (selectedBrand != "All") {
                     displayList = displayList
-                        .where((p) => p.title
-                            .toLowerCase()
-                            .contains(selectedBrand.toLowerCase()))
+                        .where(
+                          (p) => p.title.toLowerCase().contains(
+                            selectedBrand.toLowerCase(),
+                          ),
+                        )
                         .toList();
                   }
                   if (searchQuery.isNotEmpty) {
                     displayList = displayList
-                        .where((p) => p.title
-                            .toLowerCase()
-                            .contains(searchQuery.toLowerCase()))
+                        .where(
+                          (p) => p.title.toLowerCase().contains(
+                            searchQuery.toLowerCase(),
+                          ),
+                        )
                         .toList();
                   }
                   if (displayList.isEmpty) {
@@ -430,17 +466,20 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
                   return GridView.builder(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.65,
-                      crossAxisSpacing: 15,
-                      mainAxisSpacing: 15,
-                    ),
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.65,
+                          crossAxisSpacing: 15,
+                          mainAxisSpacing: 15,
+                        ),
                     itemCount: displayList.length,
                     itemBuilder: (context, index) {
                       final product = displayList[index];
                       return GestureDetector(
-                        onTap: () => Navigator.pushNamed(context, '/details',
-                            arguments: product),
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          '/details',
+                          arguments: product,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -450,9 +489,10 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
                                   borderRadius: BorderRadius.circular(15),
                                   image: DecorationImage(
                                     image: NetworkImage(
-                                        product.images.isNotEmpty
-                                            ? product.images[0]
-                                            : ''),
+                                      product.images.isNotEmpty
+                                          ? product.images[0]
+                                          : '',
+                                    ),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -464,7 +504,8 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
                                       stream: WishlistService()
                                           .isFavoriteStream(product.id),
                                       builder: (context, snapshot) {
-                                        bool isFav = snapshot.hasData &&
+                                        bool isFav =
+                                            snapshot.hasData &&
                                             snapshot.data!.docs.isNotEmpty;
                                         return InkWell(
                                           onTap: () => WishlistService()
@@ -492,14 +533,20 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
                               ),
                             ),
                             const SizedBox(height: 5),
-                            Text(product.title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
-                            Text("\$${product.price}",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
+                            Text(
+                              product.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              "\$${product.price}",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                       );

@@ -9,32 +9,20 @@ class AccountInfoScreen extends StatefulWidget {
 }
 
 class _AccountInfoScreenState extends State<AccountInfoScreen> {
-  // تعريف أدوات التحكم بالنصوص (Controllers)
-  late TextEditingController _nameController;
-  late TextEditingController _emailController;
-  late TextEditingController _phoneController;
-  late TextEditingController _addressController;
-  late TextEditingController _passwordController;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    // جلب البيانات الحالية (لو موجودة) أو وضع بيانات افتراضية
     final User? user = FirebaseAuth.instance.currentUser;
-    _nameController = TextEditingController(text: user?.displayName ?? "Mrh Raju");
-    _emailController = TextEditingController(text: user?.email ?? "raju@example.com");
-    _phoneController = TextEditingController(text: "+880 1453-987533");
-    _addressController = TextEditingController(text: "Chhatak, Sunamgonj 12/8AB");
-    _passwordController = TextEditingController(text: "********");
+    _emailController.text = user?.email ?? "raju@example.com";
+    _passwordController.text = "********";
   }
 
   @override
   void dispose() {
-    // تنظيف الذاكرة
-    _nameController.dispose();
     _emailController.dispose();
-    _phoneController.dispose();
-    _addressController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -53,19 +41,23 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         titleTextStyle: const TextStyle(
-            color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            // صورة البروفايل
+            // Avatar replaced with Icon
             Center(
               child: Stack(
                 children: [
                   const CircleAvatar(
                     radius: 50,
-                    backgroundImage: NetworkImage("https://i.pravatar.cc/300"),
+                    backgroundColor: Color(0xFFE0E0E0),
+                    child: Icon(Icons.person, size: 50, color: Colors.grey),
                   ),
                   Positioned(
                     bottom: 0,
@@ -73,27 +65,32 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: const BoxDecoration(
-                        color: Color(0xFF9775FA), // اللون البنفسجي
+                        color: Color(0xFF9775FA),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.edit, size: 16, color: Colors.white),
+                      child: const Icon(
+                        Icons.edit,
+                        size: 16,
+                        color: Colors.white,
+                      ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 30),
 
-            // حقول الإدخال القابلة للتعديل
-            _buildEditableTile("Full Name", _nameController),
+            // Editable fields
             _buildEditableTile("Email Address", _emailController),
-            _buildEditableTile("Phone Number", _phoneController),
-            _buildEditableTile("Address", _addressController),
-            _buildEditableTile("Password", _passwordController, isPassword: true),
+            _buildEditableTile(
+              "Password",
+              _passwordController,
+              isPassword: true,
+            ),
 
             const SizedBox(height: 20),
-            
-            // زر حفظ التعديلات
+
+            // Save button
             SizedBox(
               width: double.infinity,
               height: 55,
@@ -105,13 +102,21 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                   ),
                 ),
                 onPressed: () {
-                  // هنا يمكنك إضافة كود تحديث الفايربيس لاحقاً
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Changes Saved Successfully!")),
+                    const SnackBar(
+                      content: Text("Changes Saved Successfully!"),
+                    ),
                   );
                   Navigator.pop(context);
                 },
-                child: const Text("Save Changes", style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold)),
+                child: const Text(
+                  "Save Changes",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],
@@ -120,8 +125,11 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
     );
   }
 
-  // ويدجت مخصص لرسم حقل الإدخال
-  Widget _buildEditableTile(String label, TextEditingController controller, {bool isPassword = false}) {
+  Widget _buildEditableTile(
+    String label,
+    TextEditingController controller, {
+    bool isPassword = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -142,7 +150,10 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
               ),
               filled: true,
               fillColor: Colors.grey[100],
-              contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 15,
+              ),
             ),
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
