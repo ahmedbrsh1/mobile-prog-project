@@ -2,10 +2,10 @@
 
 A modern **Flutter-based e-commerce mobile application** powered by **Firebase**, designed with clean architecture, secure authentication, and scalable backend services.
 
-#Team members
-#2305120 Ahmed Ashraf Mohamed
-#2305116 Ziad Hassan Shawky
-#2305098 Abdelrhman Rabie
+# Team members
+# 2305120 Ahmed Ashraf Mohamed
+# 2305116 Ziyad Hassan Shawky
+# 2305098 Abdelrhman Rabie
 
 ---
 
