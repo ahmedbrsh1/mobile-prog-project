@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "PUT YOUR CREDENTIALS HERE",
+    "project_id": "PUT YOUR CREDENTIALS HERE",
+    "storage_bucket": "PUT YOUR CREDENTIALS HERE"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "PUT YOUR CREDENTIALS HERE",
+        "android_client_info": {
+          "package_name": "com.example.laza_ui"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "PUT YOUR CREDENTIALS HERE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
