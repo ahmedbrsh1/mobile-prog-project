@@ -13,7 +13,6 @@ class OrderService {
     String uId = auth.currentUser!.uid;
     WriteBatch batch = _firestore.batch();
     
-    // 1. نجيب منتجات سلة اليوزر ده بس
     QuerySnapshot cartSnapshot = await _firestore
         .collection('carts')
         .where('userId', isEqualTo: uId) // مهم جداً

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../main.dart'; // استيراد themeNotifier من الماين
+import '../../main.dart';
 import '../../services/api_service.dart';
 import '../../models/product_model.dart';
 import '../../services/wishlist_service.dart';
@@ -124,7 +124,7 @@ class _MainWrapperState extends State<MainWrapper> {
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: const Text(
-                      "3 Orders",
+                      "Account",
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
@@ -246,10 +246,10 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
 
   final List<Map<String, dynamic>> brands = [
     {"name": "All", "icon": Icons.grid_view_rounded},
-    {"name": "Adidas", "logo": "assets/images/adidas.png"},
-    {"name": "Nike", "logo": "assets/images/nike.png"},
-    {"name": "Fila", "logo": "assets/images/fila.png"},
-    {"name": "Puma", "logo": "assets/images/puma.png"},
+    {"name": "Classic", "icon": Icons.account_balance},
+    {"name": "Sleek", "icon":  Icons.layers},
+    {"name": "Elegant", "icon": Icons.auto_awesome},
+    {"name": "Modern", "icon": Icons.bolt},
   ];
 
   @override
@@ -356,7 +356,6 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
             ),
             const SizedBox(height: 15),
 
-            // --- الجزء الخاص بالبراندات (تم وضع التعديل هنا) ---
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -389,22 +388,12 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
                                 ),
                                 height: 35,
                                 width: 35,
-                                child: brand["name"] == "All"
-                                    ? const Icon(
-                                        Icons.grid_view_rounded,
-                                        size: 20,
-                                        color: Colors.black,
-                                      )
-                                    : Image.asset(
-                                        brand["logo"],
-                                        fit: BoxFit.contain,
-                                        errorBuilder:
-                                            (context, error, stackTrace) =>
-                                                const Icon(
-                                                  Icons.error,
-                                                  size: 15,
-                                                ),
-                                      ),
+                         child: Icon(
+                             brand["icon"] as IconData,
+                             size: 20,
+                             color: Colors.black,
+                            ),
+
                               ),
                               const SizedBox(width: 10),
                               Text(
